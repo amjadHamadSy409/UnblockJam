@@ -17,6 +17,9 @@ class MovementChecker:
            
        
        for new_x,new_y in block.position:
+              if not (0 <= new_x < grid.row and 0 <= new_y < grid.column):
+
+                  return False, f"Movement out of bounds detected at ({new_x}, {new_y})."
               grid.block_reference[new_x][new_y]=block
               
               
@@ -93,11 +96,12 @@ class MovementChecker:
 
                if current_block.id in grid.all_blocks:
                      grid.all_blocks.pop(current_block.id)
-               message = f"Piece {current_block.id} exited successfully!"
-               if unfrozen_pieces:
+                     message = f"Piece {current_block.id} exited successfully!"
+                     if unfrozen_pieces:
                             unfrozen_ids = [p.id for p in unfrozen_pieces]
                             message += f"\n🎉 Frozen pieces {unfrozen_ids} are now unfrozen and can move!"
-            
-               return True, message      
+                            print(message) 
+                                 
 
            return True,grid
+    

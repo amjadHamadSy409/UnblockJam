@@ -6,6 +6,8 @@ import termcolor as tc
 from movement_checker import MovementChecker as mch
 class Movement:
    
+   
+   
   def move_to_new_cells(grid, block, direction, steps, state_manager=None):
         direction = direction.lower() 
         new_grid = cp.deepcopy(grid)
@@ -45,7 +47,7 @@ class Movement:
                     
                     if new_cell is not None and new_cell.id != current_block.id:
                         if new_cell.type == 'piece' or new_cell.type == 'block':
-                            return False, f"Cannot jump over block/piece at ({new_x},{new_y}) at step {step}."
+                            return False, f"Cannot jump over {new_cell.type} at ({new_x},{new_y}) at step {step}."
                         
                         elif new_cell.type == 'gate' and new_cell.color != current_block.color:
                             return False, f"Cannot pass non-matching gate at ({new_x},{new_y}) at step {step}."
@@ -72,7 +74,8 @@ class Movement:
             if success:
                 if state_manager:
                     state_manager.add_state(new_grid)
-                return True, "Piece exited successfully!"
+               
+                return True,(result,"Piece exited successfully!")
             else:
                 return False, result
         else:

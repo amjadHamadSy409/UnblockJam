@@ -15,45 +15,58 @@ class Grid:
         
     def   __eq__(self,other):
         
-        if not isinstance(other,Grid):
-            return False
-        
-        if self.row !=other.row or self.column != other.column:
-            return False
-        
-        self_movable_pos = {tuple(sorted(p.position)) for p in self.movable_pieces}
-        other_movable_pos={tuple(sorted(p.position))for p in other.movable_pieces}
-        
-        if self_movable_pos != other_movable_pos:
-            return False
-        
-        for i in range(self.row):
-            for j in range(self.column):
-               b1= self.block_reference[i][j]
-               b2= other.block_reference[i][j]
-               if b1 is None and b2 is not None:
-                   return False
-               if b1 is not None and b2 is None :
-                   return False
-               if b1 is not None and b2 is not None:
-                    if b1.is_movable != b2.is_movable or  b1.type != b2.type:
-                        return False
-               if not b1.is_movable and b1.id != b2.id:
-
-                    return False
+       if not isinstance(other,Grid):
+           return False
+       
+       if self.row!=other.row or self.column!=other.column:
+           return False
+       
+       if hash(self)!=hash(other):
+           return False
     
-        return True
+       for r in range(self.row):
+           for c in range(self.column):
+               b1=self.block_reference[r][c]
+               b2=other.block_reference[r][c]
+               
+               id1=b1.id if b1 else 0
+               id2=b2.id if b2 else 0
+               
+               if id1!=id2:
+                   return False
+               
+               for block_id,block in self.all_blocks.items():
+                   if block.type=='piece':
+                       other_block=other.all_blocks[block_id]
+                       if not other_block:
+                        return False 
+                       if getattr(block,'freeze_count',0)!=getattr(other_block, 'freeze_count', 0):
+                           return False
+               return True
+           
     
+    def to_tuple(self):
+    # تحويل حالة الشبكة إلى tuple يمكن مقارنته
+     grid_state = tuple(tuple(cell.id if cell else None for cell in row) for row in self.block_reference)
+    # إضافة معلومات أخرى إذا لزم الأمر
+     return grid_state
     
     def __hash__(self):
         
-        movable_positions_tuples=[]
-        for piece in self.movable_pieces:
-            sorted_positions=tuple(sorted(piece.position))
-            movable_positions_tuples.append(sorted_positions)
-        final_hash_data=tuple(sorted(movable_positions_tuples))
-        return hash((self.row,self.column,final_hash_data))
+      grid_layout=tuple(tuple(block.id if block is not None else 0 for block in row)
+                        for row in self.block_reference)
+      frozen_state = tuple(sorted(
+            (b.id, b.freeze_count) for b in self.movable_pieces if hasattr(b, 'freeze_count') and b.freeze_count > 0
+        ))
+      return hash((grid_layout,frozen_state))
+  
+  
+    def __repr__(self):
+        return f"Grid({self.row}x{self.column}, Movable:{len(self.movable_pieces)})"
     
+  
+  
+  
     
     @classmethod
     def create_grid_from_json(cls,json_file_path):
