@@ -51,7 +51,8 @@ class Movement:
                         
                         elif new_cell.type == 'gate' and new_cell.color != current_block.color:
                             return False, f"Cannot pass non-matching gate at ({new_x},{new_y}) at step {step}."
-                pass
+                else:
+                    continue    
         
         
             final_new_positions = temporary_new_positions
@@ -66,7 +67,7 @@ class Movement:
                 if new_cell is not None and new_cell.type == 'gate' :
                     is_exit_move = True
                     target_gate = new_cell
-                    break
+           
         
         if is_exit_move and target_gate:
             

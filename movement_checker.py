@@ -5,26 +5,30 @@ class MovementChecker:
    
 
         
+    
     @staticmethod
     def move_to_cell_None(grid, block, new_positions):
        
        current_position=block.position
        
        block.position=new_positions 
-       for x,y in current_position:
-              
-              grid.block_reference[x][y]=None
-           
        
        for new_x,new_y in block.position:
               if not (0 <= new_x < grid.row and 0 <= new_y < grid.column):
 
                   return False, f"Movement out of bounds detected at ({new_x}, {new_y})."
+       
+       for x,y in current_position:
+            if 0 <= x < grid.row and 0 <= y < grid.column:  
+              grid.block_reference[x][y]=None
+           
+       
+       for new_x,new_y in block.position:
+          
               grid.block_reference[new_x][new_y]=block
               
               
        return True,grid  
- 
     
     @staticmethod
     def move_to_excited(grid,gate,current_block,final_new_positions):
@@ -77,10 +81,15 @@ class MovementChecker:
            
            if same_color and check_excited :
                for x, y in current_block.position:
-                if 0 <= x < grid.row and 0 <= y < grid.column:
-                   if grid.block_reference[x][y]==current_block:
+                 if 0 <= x < grid.row and 0 <= y < grid.column:
+                   if grid.block_reference[x][y]==current_block  :
                         grid.block_reference[x][y] = None
                         
+                        
+                  
+                    
+                    
+                              
                unfrozen_pieces = []
                for block_id, block in grid.all_blocks.items():
                  if block.type == 'piece' and block.freeze_count > 0:          
